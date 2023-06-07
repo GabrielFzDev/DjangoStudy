@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+
+<!--Coloando meu conteudo dentro de um bloco e falando pro Django que isso vai pra main-->
+{% block content%}
+    <h1>Home Template</h1>
+
+    <div>
+        {% for room in rooms %}<!--Lembrar de colocar o end for-->
+            <div>
+                <h5>
+                    {{room.id}} -- <a href="{% url 'Room' room.id%}">{{room.name}}</a>
+                </h5>
+            </div>
+
+        {% endfor %}
+    </div>
+{% endblock content%}
