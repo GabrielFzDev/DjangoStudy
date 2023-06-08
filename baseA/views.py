@@ -1,5 +1,7 @@
-from django.shortcuts import render
-from .models import Room
+from django.shortcuts import render,redirect
+from django.db.models import Q
+from .models import Room,Topic
+from .form import RoomForm
 # Create your views here.
 
 # rooms = [
@@ -9,9 +11,20 @@ from .models import Room
 # ]
 
 def home(request):
-    rooms = Room.objects.all()
+    query = request.GET.get('q') if request.GET.get('q') != None else ''
+    
+    rooms = Room.objects.filter(
+        Q(topic__name__icontains=query) |
+        Q(name__icontains=query) |
+        Q(description__contains=query) |
+        Q(host__username__icontains=query)
+    )
+    topics = Topic.objects.all()
+    
+    room_count = rooms.count()
+    
     #Context variable é para ficar melhor organizado o dicionario de variveis
-    context = {'rooms':rooms}
+    context = {'rooms':rooms,'topics':topics,'room_count':room_count}
     return render(request,'baseA/home.html',context)# tres propriedades, request, template e variaveis que vc quer passar pro seu template
 
 def room(request,pk):
@@ -20,3 +33,47 @@ def room(request,pk):
     room = Room.objects.get(id=pk)
     context = {'room':room}
     return render(request,'baseA/room.html',context)
+
+def createRoom(request):
+    form = RoomForm()
+    
+    if request.method == 'POST':
+        
+        form = RoomForm(request.POST)
+        #Se os valores estiverem validos, nada de errado
+        if form.is_valid():
+            form.save()
+            #Redirecionar o usuario para a pagina home (o nome da pagina eh o mesmo do name em URLs)
+            return redirect('Home')
+    
+    context = {'form':form}
+    return render(request, 'baseA/room_form.html',context)
+
+def updateRoom(request,pk):
+    room = Room.objects.get(id=pk)
+    form = RoomForm(instance=room)#Para poder colocar dados já nesse form precisa colocar o instancecom os dados q vc quer, se ficar vazio, vai vim um formulario vazio
+    
+    context = {'form':form}
+    
+    if request.method == 'POST':
+        form = RoomForm(request.POST,instance=room)
+        #Se os valores estiverem validos, nada de errado
+        if form.is_valid():
+            form.save()
+            #Redirecionar o usuario para a pagina home (o nome da pagina eh o mesmo do name em URLs)
+            return redirect('Home')
+    
+    return render(request,'baseA/room_form.html',context)
+    
+def deleteRoom(request,pk):
+    room = Room.objects.get(id=pk)
+    
+    if request.method == 'POST':
+        room.delete()
+        return redirect('Home')
+    
+    return render(request,'baseA/delete.html',{'obj':room})
+
+def loginRegister(request):
+    context ={}
+    return render(request,'baseA/login_register.html',context)
