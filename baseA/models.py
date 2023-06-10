@@ -14,7 +14,7 @@ class Room(models.Model):
     topic = models.ForeignKey(Topic, on_delete=models.SET_NULL, null=True)#Quando colocamos SET_NULL, o banco precisa saber que essa coluna pode ser nula também
     name = models.CharField(max_length=200)
     description = models.TextField(null=True,blank=True) # null para nao ser nulo essa coluna, e blank para nao deixar q no formulario do HTML ficar nulo tambem
-    # participants = 
+    participants = models.ManyToManyField(User, related_name='participants',blank=True)
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)#Autonow para salver o snapshot toda vez que for dado update em algo, e auto now add para quando foi criado
     
