@@ -105,6 +105,17 @@ def room(request,pk):
     context = {'room':room,'comments':messages,'participants':participants}
     return render(request,'baseA/room.html',context)
 
+#View da pagina do usuario
+def userProfile(request,pk):
+    user = User.objects.get(id=pk)
+    #Trazer os filhos desse user
+    rooms = user.room_set.all()
+    room_messages = user.message_set.all()
+    topics = Topic.objects.all()
+    
+    context = {'user':user,'rooms':rooms,'room_messages':room_messages, 'topics':topics}
+    return render(request,'baseA/profile.html',context)
+
 @login_required(login_url='login')
 def createRoom(request):
     form = RoomForm()
@@ -114,7 +125,9 @@ def createRoom(request):
         form = RoomForm(request.POST)
         #Se os valores estiverem validos, nada de errado
         if form.is_valid():
-            form.save()
+            room = form.save(commit=False)
+            room.host = request.user
+            room.save()
             #Redirecionar o usuario para a pagina home (o nome da pagina eh o mesmo do name em URLs)
             return redirect('Home')
     
