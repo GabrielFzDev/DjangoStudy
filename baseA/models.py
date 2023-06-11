@@ -34,5 +34,8 @@ class Message(models.Model):
     updated = models.DateTimeField(auto_now=True)
     created = models.DateTimeField(auto_now_add=True)#Autonow para salver o snapshot toda vez que for dado update em algo, e auto now add para quando foi criado
     
+    class Meta:
+        ordering = ['-updated','created'] # com o - o mais novo vem primeiro, sem o - o mais novo fica por ultimo
+    
     def __str__(self):
         return self.body[0:50]
