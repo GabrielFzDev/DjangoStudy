@@ -81,7 +81,6 @@ def home(request):
     topics = Topic.objects.all()
     room_count = rooms.count()
     room_messages = Message.objects.filter(Q(room__topic__name__icontains=query))
-    
     #Context variable é para ficar melhor organizado o dicionario de variveis
     context = {'rooms':rooms,'topics':topics,'room_count':room_count,'room_messages':room_messages}
     return render(request,'baseA/home.html',context)# tres propriedades, request, template e variaveis que vc quer passar pro seu template
