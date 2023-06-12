@@ -1,2 +1,2 @@
 # DjangoStudy
-Study Django with a project
+Django project with the objective to regroup people who wants to study any theme
